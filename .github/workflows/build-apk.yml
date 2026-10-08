@@ -36,6 +36,7 @@ jobs:
       - name: Crea progetto Android
         run: |
           npx cap add android
+          npx @capacitor/assets generate --android --iconBackgroundColor '#cfe8f7' --iconBackgroundColorDark '#cfe8f7' || echo "icone non generate"
           npx cap sync android
 
       - name: Compila APK
