@@ -23,6 +23,16 @@ jobs:
       - name: Installa dipendenze
         run: npm install
 
+      - name: Prepara la cartella www
+        run: |
+          mkdir -p www
+          if [ ! -f www/index.html ]; then
+            F=$(find . -name index.html -not -path './node_modules/*' -not -path './android/*' -not -path './www/*' | head -1)
+            if [ -z "$F" ]; then echo "ERRORE: index.html non trovato nel repository"; exit 1; fi
+            echo "Uso $F"
+            cp "$F" www/index.html
+          fi
+
       - name: Crea progetto Android
         run: |
           npx cap add android
