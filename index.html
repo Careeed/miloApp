@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1b6ca8"><title>Milo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐶</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf2f7;--card:#fff;--ink:#14303f;--mut:#667f8e;--pri:#1b6ca8;--sun:#ffc857;--bad:#d64545;--ok:#2e9e6b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font:500 16px/1.4 Nunito,system-ui,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:84px}
+header{background:var(--pri);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;display:flex;align-items:center;gap:10px}
+header h1{margin:0;font-size:26px;font-weight:900;flex:1}
+header button{background:#ffffff30;color:#fff;border:0;border-radius:50%;width:38px;height:38px;font-size:18px}
+main{padding:14px;max-width:560px;margin:auto}
+.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px #14303f18}
+h2{margin:0 0 10px;font-size:19px;font-weight:900}
+.mut{color:var(--mut);font-size:14px}
+button.b{font:inherit;font-weight:700;border:2px solid var(--pri);background:#fff;color:var(--pri);border-radius:14px;padding:10px 14px}
+button.b.on{background:var(--pri);color:#fff}
+button.p{font:inherit;font-weight:900;border:0;background:var(--sun);color:var(--ink);border-radius:14px;padding:12px 18px;width:100%}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+.fab{position:fixed;right:18px;bottom:96px;width:56px;height:56px;border-radius:50%;border:0;background:var(--sun);font-size:30px;box-shadow:0 3px 10px #0004;font-weight:900;color:var(--ink)}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;padding:6px 6px calc(env(safe-area-inset-bottom,0px) + 6px);box-shadow:0 -2px 8px #14303f20}
+nav button{flex:1;border:0;background:none;font:700 12px Nunito,system-ui;color:var(--mut);padding:6px 0;border-radius:12px}
+nav button span{display:block;font-size:24px}nav button.on{color:var(--pri);background:#1b6ca814}
+.done{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:#eef6f1;font-weight:900;margin-top:10px;width:100%;border:2px solid var(--ok);font-size:17px;color:var(--ink)}
+.done.on{background:var(--ok);color:#fff}
+.bar{height:26px;border-radius:9px;background:var(--pri);color:#fff;font-weight:900;padding:0 10px;display:flex;align-items:center;min-width:34px;transition:width .4s}
+.prize{text-align:center;font-size:44px;margin:4px 0}
+.it{display:flex;gap:12px;align-items:center}.it .ic{font-size:30px}.it .tx{flex:1}
+.tag{display:inline-block;font-size:13px;font-weight:700;border-radius:10px;padding:2px 9px;background:#1b6ca81a;color:var(--pri)}
+.tag.bad{background:#d6454520;color:var(--bad)}.tag.warn{background:#ffc85766;color:#7a5600}
+.ph{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:#dfe9ef;display:flex;align-items:center;justify-content:center;font-size:40px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.avatar{width:150px;height:150px;border-radius:50%;object-fit:cover;background:#dfe9ef;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:70px;border:5px solid var(--sun)}
+#sh{position:fixed;inset:0;background:#0007;display:none;align-items:flex-end;z-index:9}
+#sh>div{background:#fff;border-radius:22px 22px 0 0;width:100%;max-height:90vh;overflow:auto;padding:18px 18px calc(env(safe-area-inset-bottom,0px) + 18px);max-width:560px;margin:auto}
+label{display:block;font-weight:700;font-size:14px;margin:10px 0 3px}
+input,select,textarea{width:100%;font:inherit;padding:11px;border:2px solid #d3e0e8;border-radius:12px;background:#fff;color:var(--ink)}
+a.b{text-decoration:none;text-align:center;display:block}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);display:inline-block}.dot.off{background:var(--bad)}
+</style></head><body>
+<header><h1>🐶 Milo</h1><span id="st" class="dot"></span><button onclick="cfg()">⚙️</button></header>
+<main id="m"></main><button class="fab" id="fab" onclick="add()">+</button>
+<nav id="nv"></nav><div id="sh" onclick="if(event.target==this)closeSh()"><div id="shc"></div></div>
+<script>
+const WHO=['Simo','Pao'],EM=['🏆','🥇','👑','🦴','🌟','🍖','🎖️','🦮'];
+const TIPI={farm:['💊','Antiparassitario / farmaco',30],groom:['✂️','Toelettatrice',0],vet:['💉','Veterinario / vaccino',0],denti:['🪥','Lavaggio denti',7],altro:['📌','Altro',0]};
+let tab='walk',S=JSON.parse(localStorage.mc||'{}'),url=localStorage.mu||'',busy=0,editing=0,photo='';
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>new Date().toLocaleDateString('sv'),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const list=p=>Object.entries(S).filter(([k])=>k.startsWith(p)).map(([k,v])=>({...v,_k:k,id:k.slice(p.length)}));
+const stat=ok=>$('#st').className='dot'+(ok?'':' off');
+async function pull(){if(!url||busy||editing)return;try{const o=await(await fetch(url)).json();S={};for(const k in o)try{S[k]=JSON.parse(o[k])}catch{}localStorage.mc=JSON.stringify(S);stat(1);render()}catch{stat(0)}}
+function save(k,v){v===null?delete S[k]:S[k]=v;localStorage.mc=JSON.stringify(S);busy++;render();
+ fetch(url,{method:'POST',body:JSON.stringify({key:k,value:v})}).then(()=>stat(1)).catch(()=>stat(0)).finally(()=>busy--)}
+function cfg(){editing=1;$('#shc').innerHTML=`<h2>Collegamento al Foglio Google</h2><p class="mut">Incolla l'URL dell'app web di Apps Script (finisce con /exec). Va inserito uguale su entrambi i telefoni.</p><input id="u" value="${esc(url)}" placeholder="https://script.google.com/macros/s/.../exec"><br><br><button class="p" onclick="url=$('#u').value.trim();localStorage.mu=url;closeSh();pull()">Salva e sincronizza</button>`;$('#sh').style.display='flex'}
+function closeSh(){$('#sh').style.display='none';editing=0;render()}
+function sheet(t,f,v,ok,del){editing=1;photo=v.photo||'';
+ let h=`<h2>${t}</h2>`;for(const x of f){const val=v[x.n]??'';h+=`<label>${x.l}</label>`+(x.t=='select'?`<select id="f_${x.n}">${x.o.map(([a,b])=>`<option value="${a}" ${a==val?'selected':''}>${b}</option>`).join('')}</select>`:x.t=='photo'?`<input type="file" accept="image/*" onchange="rs(this)">`:x.t=='area'?`<textarea id="f_${x.n}" rows="2">${esc(val)}</textarea>`:`<input id="f_${x.n}" type="${x.t}" value="${esc(val)}">`)}
+ h+=`<br><button class="p" id="ok">Salva</button>`+(del?`<br><br><button class="b" style="width:100%;color:var(--bad);border-color:var(--bad)" id="del">Elimina</button>`:'');
+ $('#shc').innerHTML=h;$('#sh').style.display='flex';
+ $('#ok').onclick=()=>{const o={};for(const x of f)if(x.t!='photo'){const e=$('#f_'+x.n);o[x.n]=x.t=='number'?(e.value===''?null:+e.value):e.value}if(f.some(x=>x.t=='photo'))o.photo=photo;ok(o);closeSh()};
+ if(del)$('#del').onclick=()=>{if(confirm('Eliminare?')){del();closeSh()}}}
+function rs(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,320/Math.max(im.width,im.height));c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);photo=c.toDataURL('image/jpeg',.6)};im.src=r.result};r.readAsDataURL(f)}
+const NAV=[['walk','🦮','Passeggiata'],['due','📅','Scadenze'],['food','🍖','Pappe'],['id','🪪','Carta ID']];
+function render(){if(editing)return;$('#nv').innerHTML=NAV.map(n=>`<button class="${tab==n[0]?'on':''}" onclick="tab='${n[0]}';render()"><span>${n[1]}</span>${n[2]}</button>`).join('');
+ $('#fab').style.display=tab=='due'||tab=='food'?'block':'none';
+ $('#m').innerHTML=!url?`<div class="card"><h2>Benvenuti! 🐾</h2><p>Per condividere i dati tra i due telefoni collega Milo al Foglio Google.</p><button class="p" onclick="cfg()">Collega il foglio</button></div>`:({walk:vWalk,due:vDue,food:vFood,id:vId})[tab]()}
+function vWalk(){const t=today(),w=S['walk:'+t]||{},mo=t.slice(0,7),all=list('walk:').filter(x=>x.done&&x.who);
+ const cnt=m=>WHO.map(n=>all.filter(x=>x.id.startsWith(m)&&x.who==n).length),c=cnt(mo),mx=Math.max(1,...c);
+ const prize=m=>{const k=cnt(m);if(!k[0]&&!k[1])return null;return k[0]==k[1]?'🤝':EM[+m.slice(5)%EM.length]};
+ const lead=c[0]==c[1]?'Pari!':(c[0]>c[1]?WHO[0]:WHO[1])+' è in testa',end=+t.slice(8)>=new Date(+t.slice(0,4),+t.slice(5,7),0).getDate()-2;
+ const past=[...new Set(all.map(x=>x.id.slice(0,7)))].filter(m=>m<mo).sort().reverse();
+ return `<div class="card"><h2>Oggi tocca a…</h2><div class="row">${WHO.map(n=>`<button class="b ${w.who==n?'on':''}" onclick="wk('who','${n}')">${n}</button>`).join('')}</div>
+ <button class="done ${w.done?'on':''}" onclick="wk('done',${!w.done})"><span style="font-size:26px">${w.done?'✅':'⬜'}</span>${w.done?'Passeggiata fatta!':'Segna come fatta'}</button></div>
+ <div class="card"><h2>Chi lo porta di più (questo mese)</h2>${WHO.map((n,i)=>`<div class="row" style="margin:6px 0"><b style="flex:0 0 52px">${n}</b><div style="flex:5"><div class="bar" style="width:${Math.max(12,c[i]/mx*100)}%">${c[i]}</div></div></div>`).join('')}</div>
+ <div class="card" style="text-align:center"><h2>Premio del mese</h2><div class="prize">${end?(prize(mo)||'🐾'):'🎁'}</div><div><b>${c[0]+c[1]?lead:'Nessuna passeggiata ancora'}</b></div><div class="mut">${end?'Il premio va a chi è in testa!':'Si svela negli ultimi giorni del mese'}</div>
+ ${past.length?`<hr style="border:0;border-top:1px solid #e1ebf1;margin:14px 0"><div class="mut">Mesi passati</div>${past.map(m=>{const k=cnt(m);return `<div>${prize(m)} ${m.slice(5)}/${m.slice(0,4)} – ${k[0]==k[1]?'Pari':k[0]>k[1]?WHO[0]:WHO[1]} (${k[0]} vs ${k[1]})</div>`}).join('')}`:''}</div>`}
+function wk(f,v){const k='walk:'+today();save(k,{...(S[k]||{}),[f]:v})}
+const dl=w=>Math.round((new Date(new Date(w).toDateString())-new Date(new Date().toDateString()))/864e5);
+function vDue(){const a=list('due:').sort((x,y)=>(x.when||'9').localeCompare(y.when||'9'));
+ if(!a.length)return `<div class="card"><h2>Nessuna scadenza</h2><p class="mut">Tocca + per aggiungere Simparica, toelettatrice, vaccini, denti…</p></div>`;
+ return a.map(x=>{const d=x.when?dl(x.when):null,D=x.when?new Date(x.when):null,tm=x.when&&x.when.slice(11)!='00:00'?' ore '+x.when.slice(11):'';
+ const low=x.stock!=null&&x.alert!=null&&x.stock<=x.alert;
+ return `<div class="card"><div class="it"><div class="ic">${(TIPI[x.tipo]||TIPI.altro)[0]}</div><div class="tx" onclick="edDue('${x.id}')"><b>${esc(x.title)}</b><div class="mut">${D?D.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})+tm:''}</div>
+ ${D?`<span class="tag ${d<0?'bad':d<=3?'warn':''}">${d<0?'scaduta da '+-d+' gg':d==0?'oggi':d==1?'domani':'tra '+d+' gg'}</span>`:''}</div><button class="b" style="flex:0" onclick="fatto('${x.id}')">Fatto</button></div>
+ ${x.stock!=null?`<div class="row" style="margin-top:10px"><span>Pastiglie rimaste: <b>${x.stock}</b> ${low?'<span class="tag bad">Riordina!</span>':''}</span><span style="text-align:right"><button class="b" onclick="stk('${x.id}',-1)">−</button> <button class="b" onclick="stk('${x.id}',1)">+</button></span></div>`:''}</div>`}).join('')}
+function stk(i,n){const x=S['due:'+i];save('due:'+i,{...x,stock:Math.max(0,(x.stock||0)+n)})}
+function fatto(i){const x={...S['due:'+i]};if(x.stock!=null)x.stock=Math.max(0,x.stock-1);
+ if(x.rep){const d=new Date(x.when);do d.setDate(d.getDate()+x.rep);while(dl(d)<0);x.when=d.toLocaleString('sv').slice(0,16).replace(' ','T');save('due:'+i,x)}
+ else if(confirm('Scadenza completata: rimuoverla?'))save('due:'+i,null);else if(x.stock!=null)save('due:'+i,x)}
+const dueF=[{n:'tipo',l:'Tipo',t:'select',o:Object.entries(TIPI).map(([k,v])=>[k,v[0]+' '+v[1]])},{n:'title',l:'Nome (es. Simparica Trio)',t:'text'},{n:'when',l:'Data e ora',t:'datetime-local'},{n:'rep',l:'Si ripete ogni (giorni, vuoto = no)',t:'number'},{n:'stock',l:'Pastiglie rimaste (opzionale)',t:'number'},{n:'alert',l:'Avvisami quando ne restano (≤)',t:'number'}];
+function edDue(i){const x=S['due:'+i];sheet('Modifica scadenza',dueF,x,o=>save('due:'+i,o),()=>save('due:'+i,null))}
+function add(){if(tab=='due')sheet('Nuova scadenza',dueF,{tipo:'farm',rep:30},o=>{if(o.title)save('due:'+uid(),o)});
+ else sheet('Nuova pappa',foodF,{kind:'Crocchette'},o=>{if(o.name)save('food:'+uid(),o)})}
+const foodF=[{n:'kind',l:'Tipo',t:'select',o:['Crocchette','Biscotti','Umido','Altro'].map(x=>[x,x])},{n:'name',l:'Nome prodotto',t:'text'},{n:'note',l:'Note (formato, prezzo, dove…)',t:'area'},{n:'photo',l:'Foto della confezione',t:'photo'}];
+const q=n=>'https://www.google.com/search?q='+encodeURIComponent(n);
+function vFood(){const a=list('food:');
+ return `<div class="grid" style="margin-bottom:12px"><a class="b p" style="padding:12px;border-radius:14px;color:var(--ink);text-decoration:none;text-align:center" href="https://www.arcaplanet.it" target="_blank">🛒 Arcaplanet</a><a class="b p" style="padding:12px;border-radius:14px;color:var(--ink);text-decoration:none;text-align:center" href="${q('Spazio Pet Store Cona offerte')}" target="_blank">🛒 Spazio Pet Store</a></div>`+
+ (a.length?`<div class="grid">${a.map(x=>`<div class="card" style="margin:0" onclick="edFood('${x.id}')">${x.photo?`<img class="ph" src="${x.photo}">`:`<div class="ph">${x.kind=='Biscotti'?'🦴':'🥣'}</div>`}<b>${esc(x.name)}</b><div class="mut">${esc(x.kind)}</div><div class="mut">${esc(x.note)}</div><a class="tag" onclick="event.stopPropagation()" href="${q(x.name+' arcaplanet')}" target="_blank">Cerca online</a></div>`).join('')}</div>`:`<div class="card"><h2>Cosa piace a Milo?</h2><p class="mut">Tocca + e aggiungi crocchette e biscotti con foto, così li riconoscete al negozio.</p></div>`)}
+function edFood(i){sheet('Modifica pappa',foodF,S['food:'+i],o=>save('food:'+i,o),()=>save('food:'+i,null))}
+const idF=[{n:'photo',l:'Foto',t:'photo'},{n:'nome',l:'Nome',t:'text'},{n:'razza',l:'Razza',t:'text'},{n:'nascita',l:'Data di nascita',t:'date'},{n:'sesso',l:'Sesso',t:'select',o:[['','—'],['Maschio','Maschio'],['Femmina','Femmina']]},{n:'colore',l:'Colore',t:'text'},{n:'chip',l:'Microchip',t:'text'},{n:'vet',l:'Veterinario (nome e telefono)',t:'text'},{n:'note',l:'Allergie / note',t:'area'}];
+function vId(){const p={nome:'Milo',razza:'Maltese',...(S.profile||{})},pw=(S.pesi||[]).slice().sort((a,b)=>b.d.localeCompare(a.d));let eta='',bd='';
+ if(p.nascita){const n=new Date(p.nascita),o=new Date();let a=o.getFullYear()-n.getFullYear(),m=o.getMonth()-n.getMonth();if(m<0||(m==0&&o.getDate()<n.getDate()))a--;eta=a<1?'meno di 1 anno':a+(a==1?' anno':' anni');
+ let nx=new Date(o.getFullYear(),n.getMonth(),n.getDate());if(dl(nx)<0)nx.setFullYear(o.getFullYear()+1);const d=dl(nx);bd=d==0?'🎂 Auguri Milo!':'🎂 Compleanno tra '+d+' giorni ('+nx.toLocaleDateString('it-IT',{day:'numeric',month:'long'})+')'}
+ const r=(l,v)=>v?`<div class="row" style="margin:5px 0"><span class="mut" style="flex:0 0 105px">${l}</span><b>${esc(v)}</b></div>`:'';
+ return `<div class="card" style="text-align:center">${p.photo?`<img class="avatar" src="${p.photo}">`:'<div class="avatar">🐶</div>'}<h2 style="font-size:26px;margin:0">${esc(p.nome)}</h2><div class="mut">${esc(p.razza)}${eta?' · '+eta:''}</div>${bd?`<div style="margin-top:8px"><span class="tag warn">${bd}</span></div>`:''}</div>
+ <div class="card">${r('Nato il',p.nascita?new Date(p.nascita).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'}):'')}${r('Sesso',p.sesso)}${r('Colore',p.colore)}${r('Microchip',p.chip)}${r('Veterinario',p.vet)}${r('Note',p.note)}<br><button class="b" style="width:100%" onclick="sheet('Carta d\\'identità',idF,S.profile||{nome:'Milo',razza:'Maltese'},o=>save('profile',o))">Modifica dati</button></div>
+ <div class="card"><h2>⚖️ Peso ${pw[0]?': '+pw[0].kg+' kg':''}</h2>${pw.slice(0,6).map(x=>`<div class="mut">${new Date(x.d).toLocaleDateString('it-IT')} – ${x.kg} kg</div>`).join('')}<br><button class="b" style="width:100%" onclick="sheet('Registra peso',[{n:'kg',l:'Peso (kg)',t:'number'}],{},o=>{if(o.kg)save('pesi',[...(S.pesi||[]),{d:today(),kg:o.kg}])})">Registra peso di oggi</button></div>`}
+render();if(!url)cfg();pull();setInterval(pull,20000);addEventListener('focus',pull);document.addEventListener('visibilitychange',()=>!document.hidden&&pull());
+</script></body></html>

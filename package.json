@@ -1,0 +1,11 @@
+{
+  "name": "milo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Milo - app di famiglia per il nostro maltese",
+  "dependencies": {
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/cli": "^6.1.0",
+    "@capacitor/core": "^6.1.0"
+  }
+}
