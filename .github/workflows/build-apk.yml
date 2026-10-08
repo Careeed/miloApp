@@ -39,4 +39,3 @@ jobs:
         with:
           name: milo-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-
